@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
+import { useContactMessages } from '../context/ContactMessagesContext'
 
 export default function Contact() {
+  const { addMessage } = useContactMessages()
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -12,7 +14,16 @@ export default function Contact() {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    // Here you would typically send the form data to a server
+    
+    // ذخیره پیام
+    addMessage({
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone,
+      message: formData.message,
+      type: formData.type,
+    })
+    
     alert('پیام شما با موفقیت ارسال شد! به زودی با شما تماس خواهیم گرفت.')
     setFormData({
       name: '',

@@ -11,10 +11,14 @@ import Login from './pages/admin/Login'
 import Dashboard from './pages/admin/Dashboard'
 import ProductsList from './pages/admin/ProductsList'
 import ProductForm from './pages/admin/ProductForm'
+import OrdersList from './pages/admin/OrdersList'
+import ContactMessagesList from './pages/admin/ContactMessagesList'
 import ProtectedRoute from './components/ProtectedRoute'
 import CartProvider from './context/CartContext'
 import AuthProvider from './context/AuthContext'
 import ProductsProvider from './context/ProductsContext'
+import OrdersProvider from './context/OrdersContext'
+import ContactMessagesProvider from './context/ContactMessagesContext'
 
 function PublicLayout({ children }) {
   return (
@@ -30,8 +34,10 @@ function App() {
   return (
     <AuthProvider>
       <ProductsProvider>
-        <CartProvider>
-          <Router>
+        <OrdersProvider>
+          <ContactMessagesProvider>
+            <CartProvider>
+              <Router>
             <Routes>
               {/* Admin Routes */}
               <Route path="/admin/login" element={<Login />} />
@@ -64,6 +70,22 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <ProductForm />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/orders"
+                element={
+                  <ProtectedRoute>
+                    <OrdersList />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/contact-messages"
+                element={
+                  <ProtectedRoute>
+                    <ContactMessagesList />
                   </ProtectedRoute>
                 }
               />
@@ -120,6 +142,8 @@ function App() {
             </Routes>
           </Router>
         </CartProvider>
+      </ContactMessagesProvider>
+      </OrdersProvider>
       </ProductsProvider>
     </AuthProvider>
   )

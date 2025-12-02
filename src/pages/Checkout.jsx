@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useCart } from '../context/CartContext'
+import { useOrders } from '../context/OrdersContext'
 import { motion } from 'framer-motion'
 
 export default function Checkout() {
   const navigate = useNavigate()
   const { cart, getTotalPrice, clearCart } = useCart()
+  const { addOrder } = useOrders()
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -34,9 +36,33 @@ export default function Checkout() {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    // Here you would typically send the order to a server
-    alert('سفارش شما با موفقیت ثبت شد! به زودی با شما تماس خواهیم گرفت.')
+    
+    // ایجاد سفارش
+    const orderData = {
+      customer: {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        phone: formData.phone,
+        address: formData.address,
+        city: formData.city,
+        postalCode: formData.postalCode,
+      },
+      items: cart.map((item) => ({
+        productId: item.product.id,
+        productName: item.product.name,
+        productImage: item.product.image,
+        quantity: item.quantity,
+        price: item.product.price,
+        total: item.product.price * item.quantity,
+      })),
+      total: getTotalPrice(),
+      notes: formData.notes || '',
+    }
+
+    addOrder(orderData)
     clearCart()
+    alert('سفارش شما با موفقیت ثبت شد! به زودی با شما تماس خواهیم گرفت.')
     navigate('/')
   }
 
