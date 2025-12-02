@@ -1,8 +1,9 @@
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { products } from '../data/products'
+import { useProducts } from '../context/ProductsContext'
 
 export default function Home() {
+  const { products } = useProducts()
   const featuredProducts = products.slice(0, 4)
 
   const features = [

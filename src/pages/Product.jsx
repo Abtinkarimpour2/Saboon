@@ -1,14 +1,15 @@
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { products } from '../data/products'
 import { useCart } from '../context/CartContext'
+import { useProducts } from '../context/ProductsContext'
 
 export default function Product() {
   const { id } = useParams()
   const navigate = useNavigate()
   const { addToCart } = useCart()
-  const product = products.find((p) => p.id === parseInt(id))
+  const { getProductById, products } = useProducts()
+  const product = getProductById(id)
   const [selectedImage, setSelectedImage] = useState(0)
   const [selectedVariant, setSelectedVariant] = useState({})
 

@@ -7,30 +7,122 @@ import Product from './pages/Product'
 import About from './pages/About'
 import Contact from './pages/Contact'
 import Checkout from './pages/Checkout'
+import Login from './pages/admin/Login'
+import Dashboard from './pages/admin/Dashboard'
+import ProductsList from './pages/admin/ProductsList'
+import ProductForm from './pages/admin/ProductForm'
+import ProtectedRoute from './components/ProtectedRoute'
 import CartProvider from './context/CartContext'
+import AuthProvider from './context/AuthContext'
+import ProductsProvider from './context/ProductsContext'
+
+function PublicLayout({ children }) {
+  return (
+    <div className="min-h-screen flex flex-col">
+      <Header />
+      <main className="flex-grow">{children}</main>
+      <Footer />
+    </div>
+  )
+}
 
 function App() {
   return (
-    <CartProvider>
-      <Router>
-        <div className="min-h-screen flex flex-col">
-          <Header />
-          <main className="flex-grow">
+    <AuthProvider>
+      <ProductsProvider>
+        <CartProvider>
+          <Router>
             <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/shop" element={<Shop />} />
-              <Route path="/product/:id" element={<Product />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/checkout" element={<Checkout />} />
+              {/* Admin Routes */}
+              <Route path="/admin/login" element={<Login />} />
+              <Route
+                path="/admin/dashboard"
+                element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/products"
+                element={
+                  <ProtectedRoute>
+                    <ProductsList />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/products/new"
+                element={
+                  <ProtectedRoute>
+                    <ProductForm />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/products/edit/:id"
+                element={
+                  <ProtectedRoute>
+                    <ProductForm />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Public Routes */}
+              <Route
+                path="/"
+                element={
+                  <PublicLayout>
+                    <Home />
+                  </PublicLayout>
+                }
+              />
+              <Route
+                path="/shop"
+                element={
+                  <PublicLayout>
+                    <Shop />
+                  </PublicLayout>
+                }
+              />
+              <Route
+                path="/product/:id"
+                element={
+                  <PublicLayout>
+                    <Product />
+                  </PublicLayout>
+                }
+              />
+              <Route
+                path="/about"
+                element={
+                  <PublicLayout>
+                    <About />
+                  </PublicLayout>
+                }
+              />
+              <Route
+                path="/contact"
+                element={
+                  <PublicLayout>
+                    <Contact />
+                  </PublicLayout>
+                }
+              />
+              <Route
+                path="/checkout"
+                element={
+                  <PublicLayout>
+                    <Checkout />
+                  </PublicLayout>
+                }
+              />
             </Routes>
-          </main>
-          <Footer />
-        </div>
-      </Router>
-    </CartProvider>
+          </Router>
+        </CartProvider>
+      </ProductsProvider>
+    </AuthProvider>
   )
 }
 
 export default App
-

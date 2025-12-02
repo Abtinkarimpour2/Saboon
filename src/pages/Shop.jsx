@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { products, categories } from '../data/products'
+import { categories } from '../data/products'
+import { useProducts } from '../context/ProductsContext'
 
 export default function Shop() {
+  const { products } = useProducts()
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
 
