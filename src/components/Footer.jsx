@@ -1,17 +1,31 @@
 import { Link } from 'react-router-dom'
+import { useState } from 'react'
 
 export default function Footer() {
+  const [logoError, setLogoError] = useState(false)
+  
   return (
     <footer className="bg-dark text-ivory mt-20">
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="col-span-1 md:col-span-2">
-            <div className="flex items-center space-x-2 space-x-reverse mb-4">
-              <div className="text-2xl font-serif font-bold text-gold">
-                Biaresh
-              </div>
-              <div className="text-sm">Bath & Body</div>
+            <div className="flex items-center space-x-3 space-x-reverse mb-4">
+              {!logoError ? (
+                <img
+                  src="/logo.png"
+                  alt="Biaresh Logo"
+                  className="h-12 w-auto object-contain"
+                  onError={() => setLogoError(true)}
+                />
+              ) : (
+                <div className="flex flex-col">
+                  <div className="text-2xl font-serif font-bold text-gold">
+                    Biaresh
+                  </div>
+                  <div className="text-sm">Bath & Body</div>
+                </div>
+              )}
             </div>
             <p className="text-ivory/70 text-sm mb-4 max-w-md">
               ما محصولات دست‌ساز لوکس با مواد طبیعی و تکنیک‌های سنتی می‌سازیم.

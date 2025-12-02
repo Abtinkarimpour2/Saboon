@@ -7,6 +7,7 @@ import Product from './pages/Product'
 import About from './pages/About'
 import Contact from './pages/Contact'
 import Checkout from './pages/Checkout'
+import OrderSuccess from './pages/OrderSuccess'
 import Login from './pages/admin/Login'
 import Dashboard from './pages/admin/Dashboard'
 import ProductsList from './pages/admin/ProductsList'
@@ -14,6 +15,7 @@ import ProductForm from './pages/admin/ProductForm'
 import OrdersList from './pages/admin/OrdersList'
 import ContactMessagesList from './pages/admin/ContactMessagesList'
 import ProtectedRoute from './components/ProtectedRoute'
+import ScrollToTop from './components/ScrollToTop'
 import CartProvider from './context/CartContext'
 import AuthProvider from './context/AuthContext'
 import ProductsProvider from './context/ProductsContext'
@@ -38,6 +40,7 @@ function App() {
           <ContactMessagesProvider>
             <CartProvider>
               <Router>
+                <ScrollToTop />
             <Routes>
               {/* Admin Routes */}
               <Route path="/admin/login" element={<Login />} />
@@ -136,6 +139,14 @@ function App() {
                 element={
                   <PublicLayout>
                     <Checkout />
+                  </PublicLayout>
+                }
+              />
+              <Route
+                path="/order-success"
+                element={
+                  <PublicLayout>
+                    <OrderSuccess />
                   </PublicLayout>
                 }
               />

@@ -32,10 +32,14 @@ export default function CartDrawer() {
 
           {/* Drawer */}
           <motion.div
-            initial={{ x: '100%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '100%' }}
-            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            initial={{ x: '100%', opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: '100%', opacity: 0 }}
+            transition={{ 
+              type: 'tween',
+              duration: 0.3,
+              ease: [0.4, 0, 0.2, 1]
+            }}
             className="fixed top-0 left-0 h-full w-full md:w-96 bg-ivory shadow-xl z-50 overflow-y-auto"
           >
             <div className="p-6">

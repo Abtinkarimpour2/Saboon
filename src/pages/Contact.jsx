@@ -13,9 +13,16 @@ export default function Contact() {
   })
 
   const validatePhone = (phone) => {
-    // Pattern for international phone numbers: allows +, digits, spaces, hyphens, parentheses
-    const phonePattern = /^[\+]?[(]?[0-9]{1,4}[)]?[-\s\.]?[(]?[0-9]{1,4}[)]?[-\s\.]?[0-9]{1,9}$/
-    return phonePattern.test(phone.replace(/\s/g, ''))
+    // Remove all spaces for validation
+    const cleanPhone = phone.replace(/\s/g, '')
+    
+    // Iran: +989121003434 or 09121003434 (11 digits starting with 0 or +98)
+    const iranPattern = /^(\+98|0)?9\d{9}$/
+    
+    // Turkey: +905355599991 or 05355599991 (11 digits starting with 0 or +90)
+    const turkeyPattern = /^(\+90|0)?5\d{9}$/
+    
+    return iranPattern.test(cleanPhone) || turkeyPattern.test(cleanPhone)
   }
 
   const handleSubmit = (e) => {
@@ -23,7 +30,7 @@ export default function Contact() {
     
     // Validate phone number
     if (!validatePhone(formData.phone)) {
-      alert('لطفاً یک شماره تلفن معتبر وارد کنید')
+      alert('لطفاً یک شماره تلفن معتبر ایرانی یا ترکی وارد کنید')
       return
     }
     
@@ -75,9 +82,17 @@ export default function Contact() {
           transition={{ duration: 0.6 }}
           className="text-center mb-12"
         >
-          <h1 className="text-4xl md:text-6xl font-serif mb-4">
+          <div className="mb-6">
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif font-bold mb-2 text-gold">
+              Biaresh
+            </h1>
+            <p className="text-xl md:text-2xl font-serif text-dark/80 tracking-wide">
+              Bath & Body
+            </p>
+          </div>
+          <h2 className="text-3xl md:text-5xl font-serif mb-4">
             تماس با ما
-          </h1>
+          </h2>
           <p className="text-dark/70 max-w-2xl mx-auto">
             ما اینجا هستیم تا به سوالات شما پاسخ دهیم
           </p>
@@ -124,14 +139,13 @@ export default function Contact() {
 
               <div>
                 <label className="block text-sm font-medium mb-2">
-                  ایمیل
+                  ایمیل <span className="text-dark/50 text-xs">(اختیاری)</span>
                 </label>
                 <input
                   type="email"
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  required
                   className="w-full px-4 py-3 border border-dark/20 rounded-lg focus:outline-none focus:border-gold transition-colors"
                 />
               </div>
@@ -146,13 +160,8 @@ export default function Contact() {
                   value={formData.phone}
                   onChange={handleChange}
                   required
-                  placeholder="+90 (539) 334 96 76"
-                  pattern="[\+]?[(]?[0-9]{1,4}[)]?[-\s\.]?[(]?[0-9]{1,4}[)]?[-\s\.]?[0-9]{1,9}"
                   className="w-full px-4 py-3 border border-dark/20 rounded-lg focus:outline-none focus:border-gold transition-colors"
                 />
-                <p className="text-xs text-dark/50 mt-1">
-                  مثال: +90 (539) 334 96 76 یا 905393349676
-                </p>
               </div>
 
               <div>

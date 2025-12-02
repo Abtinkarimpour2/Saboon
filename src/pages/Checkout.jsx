@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useCart } from '../context/CartContext'
 import { useOrders } from '../context/OrdersContext'
@@ -6,7 +6,7 @@ import { motion } from 'framer-motion'
 
 export default function Checkout() {
   const navigate = useNavigate()
-  const { cart, getTotalPrice, clearCart } = useCart()
+  const { cart, getTotalPrice, clearCart, isCartLoaded } = useCart()
   const { addOrder } = useOrders()
   const [formData, setFormData] = useState({
     firstName: '',
@@ -18,6 +18,15 @@ export default function Checkout() {
     postalCode: '',
     notes: '',
   })
+
+  if (!isCartLoaded) {
+    return (
+      <div className="pt-24 pb-20 text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gold mx-auto mb-4"></div>
+        <p className="text-dark/70">در حال بارگذاری...</p>
+      </div>
+    )
+  }
 
   if (cart.length === 0) {
     return (
@@ -35,9 +44,16 @@ export default function Checkout() {
   }
 
   const validatePhone = (phone) => {
-    // Pattern for international phone numbers: allows +, digits, spaces, hyphens, parentheses
-    const phonePattern = /^[\+]?[(]?[0-9]{1,4}[)]?[-\s\.]?[(]?[0-9]{1,4}[)]?[-\s\.]?[0-9]{1,9}$/
-    return phonePattern.test(phone.replace(/\s/g, ''))
+    // Remove all spaces for validation
+    const cleanPhone = phone.replace(/\s/g, '')
+    
+    // Iran: +989121003434 or 09121003434 (11 digits starting with 0 or +98)
+    const iranPattern = /^(\+98|0)?9\d{9}$/
+    
+    // Turkey: +905355599991 or 05355599991 (11 digits starting with 0 or +90)
+    const turkeyPattern = /^(\+90|0)?5\d{9}$/
+    
+    return iranPattern.test(cleanPhone) || turkeyPattern.test(cleanPhone)
   }
 
   const handleSubmit = (e) => {
@@ -45,7 +61,7 @@ export default function Checkout() {
     
     // Validate phone number
     if (!validatePhone(formData.phone)) {
-      alert('لطفاً یک شماره تلفن معتبر وارد کنید')
+      alert('لطفاً یک شماره تلفن معتبر ایرانی یا ترکی وارد کنید')
       return
     }
     
@@ -74,8 +90,7 @@ export default function Checkout() {
 
     addOrder(orderData)
     clearCart()
-    alert('سفارش شما با موفقیت ثبت شد! به زودی با شما تماس خواهیم گرفت.')
-    navigate('/')
+    navigate('/order-success')
   }
 
   const handleChange = (e) => {
@@ -173,14 +188,13 @@ export default function Checkout() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-2">
-                    ایمیل
+                    ایمیل <span className="text-dark/50 text-xs">(اختیاری)</span>
                   </label>
                   <input
                     type="email"
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    required
                     className="w-full px-4 py-3 border border-dark/20 rounded-lg focus:outline-none focus:border-gold transition-colors"
                   />
                 </div>
@@ -194,13 +208,8 @@ export default function Checkout() {
                     value={formData.phone}
                     onChange={handleChange}
                     required
-                    placeholder="+90 (539) 334 96 76"
-                    pattern="[\+]?[(]?[0-9]{1,4}[)]?[-\s\.]?[(]?[0-9]{1,4}[)]?[-\s\.]?[0-9]{1,9}"
                     className="w-full px-4 py-3 border border-dark/20 rounded-lg focus:outline-none focus:border-gold transition-colors"
                   />
-                  <p className="text-xs text-dark/50 mt-1">
-                    مثال: +90 (539) 334 96 76 یا 905393349676
-                  </p>
                 </div>
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium mb-2">
@@ -230,14 +239,13 @@ export default function Checkout() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-2">
-                    کد پستی
+                    کد پستی <span className="text-dark/50 text-xs">(اختیاری)</span>
                   </label>
                   <input
                     type="text"
                     name="postalCode"
                     value={formData.postalCode}
                     onChange={handleChange}
-                    required
                     className="w-full px-4 py-3 border border-dark/20 rounded-lg focus:outline-none focus:border-gold transition-colors"
                   />
                 </div>

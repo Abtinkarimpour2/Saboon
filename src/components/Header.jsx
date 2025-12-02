@@ -6,6 +6,7 @@ import CartDrawer from './CartDrawer'
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [logoError, setLogoError] = useState(false)
   const location = useLocation()
   const { getTotalItems, isCartOpen, setIsCartOpen } = useCart()
 
@@ -36,11 +37,22 @@ export default function Header() {
         <nav className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             {/* Logo */}
-            <Link to="/" className="flex items-center space-x-2 space-x-reverse">
-              <div className="text-2xl font-serif font-bold text-gold">
-                Biaresh
-              </div>
-              <div className="text-sm text-dark/70">Bath & Body</div>
+            <Link to="/" className="flex items-center space-x-3 space-x-reverse">
+              {!logoError ? (
+                <img
+                  src="/logo.png"
+                  alt="Biaresh Logo"
+                  className="h-10 w-auto object-contain"
+                  onError={() => setLogoError(true)}
+                />
+              ) : (
+                <div className="flex flex-col">
+                  <div className="text-2xl font-serif font-bold text-gold">
+                    Biaresh
+                  </div>
+                  <div className="text-sm text-dark/70">Bath & Body</div>
+                </div>
+              )}
             </Link>
 
             {/* Desktop Navigation */}

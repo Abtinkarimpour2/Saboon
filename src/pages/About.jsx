@@ -44,7 +44,20 @@ export default function About() {
           transition={{ duration: 0.8 }}
           className="relative z-10 text-center text-white px-4"
         >
-          <h1 className="text-4xl md:text-6xl font-serif mb-4">درباره ما</h1>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="mb-6"
+          >
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif font-bold mb-2 text-gold drop-shadow-lg">
+              Biaresh
+            </h1>
+            <p className="text-xl md:text-2xl lg:text-3xl font-serif text-white/95 tracking-wide">
+              Bath & Body
+            </p>
+          </motion.div>
+          <h2 className="text-3xl md:text-5xl font-serif mb-4">درباره ما</h2>
         </motion.div>
       </section>
 

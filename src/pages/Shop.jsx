@@ -32,7 +32,15 @@ export default function Shop() {
           transition={{ duration: 0.6 }}
           className="text-center mb-12"
         >
-          <h1 className="text-4xl md:text-6xl font-serif mb-4">فروشگاه</h1>
+          <div className="mb-6">
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif font-bold mb-2 text-gold">
+              Biaresh
+            </h1>
+            <p className="text-xl md:text-2xl font-serif text-dark/80 tracking-wide">
+              Bath & Body
+            </p>
+          </div>
+          <h2 className="text-3xl md:text-5xl font-serif mb-4">فروشگاه</h2>
           <p className="text-dark/70 max-w-2xl mx-auto">
             مجموعه کامل محصولات لوکس و دست‌ساز ما
           </p>

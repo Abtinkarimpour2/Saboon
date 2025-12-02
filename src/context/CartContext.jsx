@@ -13,19 +13,38 @@ export const useCart = () => {
 export default function CartProvider({ children }) {
   const [cart, setCart] = useState([])
   const [isCartOpen, setIsCartOpen] = useState(false)
+  const [isCartLoaded, setIsCartLoaded] = useState(false)
 
   useEffect(() => {
-    const savedCart = localStorage.getItem('biaresh-cart')
-    if (savedCart) {
-      setCart(JSON.parse(savedCart))
+    // Load cart from localStorage on mount
+    try {
+      const savedCart = localStorage.getItem('biaresh-cart')
+      if (savedCart) {
+        const parsedCart = JSON.parse(savedCart)
+        if (Array.isArray(parsedCart)) {
+          setCart(parsedCart)
+        }
+      }
+    } catch (error) {
+      console.error('Error loading cart from localStorage:', error)
+    } finally {
+      setIsCartLoaded(true)
     }
   }, [])
 
   useEffect(() => {
-    localStorage.setItem('biaresh-cart', JSON.stringify(cart))
-  }, [cart])
+    // Save cart to localStorage whenever it changes (only after initial load)
+    if (isCartLoaded) {
+      try {
+        // Always save cart, even if empty (to preserve state on refresh)
+        localStorage.setItem('biaresh-cart', JSON.stringify(cart))
+      } catch (error) {
+        console.error('Error saving cart to localStorage:', error)
+      }
+    }
+  }, [cart, isCartLoaded])
 
-  const addToCart = (product, variant = {}) => {
+  const addToCart = (product, variant = {}, openCart = false) => {
     const cartItem = {
       id: `${product.id}-${JSON.stringify(variant)}`,
       product,
@@ -37,16 +56,28 @@ export default function CartProvider({ children }) {
       const existingItem = prevCart.find(
         (item) => item.id === cartItem.id
       )
-      if (existingItem) {
-        return prevCart.map((item) =>
-          item.id === cartItem.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        )
+      const newCart = existingItem
+        ? prevCart.map((item) =>
+            item.id === cartItem.id
+              ? { ...item, quantity: item.quantity + 1 }
+              : item
+          )
+        : [...prevCart, cartItem]
+      
+      // Save to localStorage immediately
+      try {
+        localStorage.setItem('biaresh-cart', JSON.stringify(newCart))
+      } catch (error) {
+        console.error('Error saving cart to localStorage:', error)
       }
-      return [...prevCart, cartItem]
+      
+      return newCart
     })
-    setIsCartOpen(true)
+    
+    // Only open cart if explicitly requested
+    if (openCart) {
+      setIsCartOpen(true)
+    }
   }
 
   const removeFromCart = (itemId) => {
@@ -78,6 +109,11 @@ export default function CartProvider({ children }) {
 
   const clearCart = () => {
     setCart([])
+    try {
+      localStorage.removeItem('biaresh-cart')
+    } catch (error) {
+      console.error('Error clearing cart from localStorage:', error)
+    }
   }
 
   return (
@@ -92,6 +128,7 @@ export default function CartProvider({ children }) {
         isCartOpen,
         setIsCartOpen,
         clearCart,
+        isCartLoaded,
       }}
     >
       {children}
