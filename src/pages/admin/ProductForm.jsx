@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { useProducts } from '../../context/ProductsContext'
 import { categories } from '../../data/products'
+import ImageUploader from '../../components/ImageUploader'
 
 export default function ProductForm() {
   const { id } = useParams()
@@ -17,7 +18,7 @@ export default function ProductForm() {
     price: '',
     category: 'soaps',
     image: '',
-    images: '',
+    images: [],
     description: '',
     scentProfile: '',
     benefits: '',
@@ -26,24 +27,31 @@ export default function ProductForm() {
   })
 
   const [errors, setErrors] = useState({})
+  const [productImages, setProductImages] = useState([])
 
   useEffect(() => {
     if (isEdit) {
       const product = getProductById(id)
       if (product) {
+        const images = Array.isArray(product.images)
+          ? product.images
+          : product.image
+          ? [product.image]
+          : []
         setFormData({
           name: product.name || '',
           nameEn: product.nameEn || '',
           price: product.price || '',
           category: product.category || 'soaps',
           image: product.image || '',
-          images: Array.isArray(product.images) ? product.images.join(', ') : product.images || '',
+          images: images,
           description: product.description || '',
           scentProfile: product.scentProfile || '',
           benefits: Array.isArray(product.benefits) ? product.benefits.join(', ') : product.benefits || '',
           ingredients: product.ingredients || '',
           perfectFor: product.perfectFor || '',
         })
+        setProductImages(images)
       }
     }
   }, [id, isEdit, getProductById])
@@ -70,7 +78,7 @@ export default function ProductForm() {
     if (!formData.nameEn.trim()) newErrors.nameEn = 'نام انگلیسی الزامی است'
     if (!formData.price || formData.price <= 0)
       newErrors.price = 'قیمت باید بیشتر از صفر باشد'
-    if (!formData.image.trim()) newErrors.image = 'آدرس تصویر اصلی الزامی است'
+    if (productImages.length === 0) newErrors.image = 'حداقل یک تصویر الزامی است'
     if (!formData.description.trim())
       newErrors.description = 'توضیحات الزامی است'
 
@@ -88,9 +96,8 @@ export default function ProductForm() {
     const productData = {
       ...formData,
       price: parseInt(formData.price),
-      images: formData.images
-        ? formData.images.split(',').map((img) => img.trim()).filter(Boolean)
-        : [formData.image],
+      image: productImages[0] || '',
+      images: productImages,
       benefits: formData.benefits
         ? formData.benefits.split(',').map((b) => b.trim()).filter(Boolean)
         : [],
@@ -103,6 +110,10 @@ export default function ProductForm() {
     }
 
     navigate('/admin/products')
+  }
+
+  const handleImagesChange = (newImages) => {
+    setProductImages(Array.isArray(newImages) ? newImages : [newImages])
   }
 
   const handleLogout = () => {
@@ -225,49 +236,52 @@ export default function ProductForm() {
               </select>
             </div>
 
-            {/* Main Image */}
+            {/* Image Uploader */}
             <div className="md:col-span-2">
               <label className="block text-sm font-medium mb-2">
-                آدرس تصویر اصلی <span className="text-red-500">*</span>
+                تصاویر محصول <span className="text-red-500">*</span>
               </label>
-              <input
-                type="url"
-                name="image"
-                value={formData.image}
-                onChange={handleChange}
-                placeholder="https://example.com/image.jpg"
-                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-gold transition-colors ${
-                  errors.image ? 'border-red-500' : 'border-dark/20'
-                }`}
+              <ImageUploader
+                images={productImages}
+                onChange={handleImagesChange}
+                multiple={true}
+                maxImages={5}
               />
               {errors.image && (
                 <p className="text-red-500 text-xs mt-1">{errors.image}</p>
               )}
-              {formData.image && (
-                <img
-                  src={formData.image}
-                  alt="Preview"
-                  className="mt-4 w-32 h-32 object-cover rounded-lg"
-                  onError={(e) => {
-                    e.target.style.display = 'none'
-                  }}
-                />
-              )}
+              <p className="text-xs text-dark/50 mt-2">
+                💡 می‌توانید تصاویر را از کامپیوتر خود آپلود کنید یا از URL استفاده کنید
+              </p>
             </div>
 
-            {/* Additional Images */}
+            {/* Alternative: URL Input (for backward compatibility) */}
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium mb-2">
-                آدرس تصاویر اضافی (جدا شده با کاما)
-              </label>
-              <input
-                type="text"
-                name="images"
-                value={formData.images}
-                onChange={handleChange}
-                placeholder="https://example.com/img1.jpg, https://example.com/img2.jpg"
-                className="w-full px-4 py-3 border border-dark/20 rounded-lg focus:outline-none focus:border-gold transition-colors"
-              />
+              <details className="border border-dark/10 rounded-lg p-4">
+                <summary className="cursor-pointer text-sm font-medium text-dark/70 hover:text-dark">
+                  یا از URL تصویر استفاده کنید (اختیاری)
+                </summary>
+                <div className="mt-4 space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      آدرس تصویر اصلی
+                    </label>
+                    <input
+                      type="url"
+                      name="image"
+                      value={formData.image}
+                      onChange={(e) => {
+                        handleChange(e)
+                        if (e.target.value && !productImages.includes(e.target.value)) {
+                          setProductImages([e.target.value, ...productImages])
+                        }
+                      }}
+                      placeholder="https://example.com/image.jpg"
+                      className="w-full px-4 py-3 border border-dark/20 rounded-lg focus:outline-none focus:border-gold transition-colors"
+                    />
+                  </div>
+                </div>
+              </details>
             </div>
 
             {/* Description */}
