@@ -12,8 +12,20 @@ export default function Contact() {
     type: 'wholesale',
   })
 
+  const validatePhone = (phone) => {
+    // Pattern for international phone numbers: allows +, digits, spaces, hyphens, parentheses
+    const phonePattern = /^[\+]?[(]?[0-9]{1,4}[)]?[-\s\.]?[(]?[0-9]{1,4}[)]?[-\s\.]?[0-9]{1,9}$/
+    return phonePattern.test(phone.replace(/\s/g, ''))
+  }
+
   const handleSubmit = (e) => {
     e.preventDefault()
+    
+    // Validate phone number
+    if (!validatePhone(formData.phone)) {
+      alert('لطفاً یک شماره تلفن معتبر وارد کنید')
+      return
+    }
     
     // ذخیره پیام
     addMessage({
@@ -35,10 +47,22 @@ export default function Contact() {
   }
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    })
+    const { name, value } = e.target
+    
+    // For phone input, only allow valid phone characters
+    if (name === 'phone') {
+      // Allow digits, +, -, spaces, parentheses
+      const phoneValue = value.replace(/[^\d\+\-\(\)\s]/g, '')
+      setFormData({
+        ...formData,
+        [name]: phoneValue,
+      })
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value,
+      })
+    }
   }
 
   return (
@@ -114,7 +138,7 @@ export default function Contact() {
 
               <div>
                 <label className="block text-sm font-medium mb-2">
-                  شماره تماس
+                  شماره تماس <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="tel"
@@ -122,8 +146,13 @@ export default function Contact() {
                   value={formData.phone}
                   onChange={handleChange}
                   required
+                  placeholder="+90 (539) 334 96 76"
+                  pattern="[\+]?[(]?[0-9]{1,4}[)]?[-\s\.]?[(]?[0-9]{1,4}[)]?[-\s\.]?[0-9]{1,9}"
                   className="w-full px-4 py-3 border border-dark/20 rounded-lg focus:outline-none focus:border-gold transition-colors"
                 />
+                <p className="text-xs text-dark/50 mt-1">
+                  مثال: +90 (539) 334 96 76 یا 905393349676
+                </p>
               </div>
 
               <div>
@@ -168,46 +197,35 @@ export default function Contact() {
                 </div>
 
                 <div>
-                  <h3 className="font-medium mb-2">واتساپ</h3>
+                  <h3 className="font-medium mb-2">شماره تماس</h3>
                   <a
-                    href="https://wa.me/989123456789"
+                    href="https://wa.me/905393349676"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-gold hover:underline"
                   >
-                    +98 912 345 6789
+                    +90 (539) 334 96 76
+                  </a>
+                </div>
+
+                <div>
+                  <h3 className="font-medium mb-2">اینستاگرام</h3>
+                  <a
+                    href="https://instagram.com/biaresh_shop"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gold hover:underline"
+                  >
+                    @biaresh_shop
                   </a>
                 </div>
 
                 <div>
                   <h3 className="font-medium mb-2">ساعات کاری</h3>
                   <p className="text-dark/70">
-                    شنبه تا پنج‌شنبه: 9 صبح تا 6 عصر
-                    <br />
-                    جمعه: تعطیل
+                    24/7 - در تمام ساعات شبانه‌روز در خدمت شما هستیم
                   </p>
                 </div>
-              </div>
-            </div>
-
-            <div className="bg-white p-8 rounded-lg shadow-sm">
-              <h2 className="text-2xl font-serif mb-6">ارسال</h2>
-              <div className="space-y-4 text-dark/70">
-                <p>
-                  <strong className="text-dark">ارسال به سراسر کشور:</strong>
-                  <br />
-                  ارسال رایگان برای خریدهای بالای 500 هزار تومان
-                </p>
-                <p>
-                  <strong className="text-dark">ارسال بین‌المللی:</strong>
-                  <br />
-                  ارسال به تمام کشورها با هزینه حمل و نقل
-                </p>
-                <p>
-                  <strong className="text-dark">زمان تحویل:</strong>
-                  <br />
-                  2-5 روز کاری در داخل کشور
-                </p>
               </div>
             </div>
 
@@ -218,7 +236,7 @@ export default function Contact() {
                 با ما تماس بگیرید.
               </p>
               <a
-                href="https://wa.me/989123456789"
+                href="https://wa.me/905393349676"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition-colors"

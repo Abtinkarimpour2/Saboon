@@ -205,7 +205,14 @@ export default function Home() {
             <h2 className="text-4xl md:text-5xl font-serif mb-4">
               ما را در اینستاگرام دنبال کنید
             </h2>
-            <p className="text-dark/70">@biareshbathbody</p>
+            <a
+              href="https://instagram.com/biaresh_shop"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gold hover:underline text-xl"
+            >
+              @biaresh_shop
+            </a>
           </motion.div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

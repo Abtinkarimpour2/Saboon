@@ -34,8 +34,20 @@ export default function Checkout() {
     return new Intl.NumberFormat('fa-IR').format(price) + ' تومان'
   }
 
+  const validatePhone = (phone) => {
+    // Pattern for international phone numbers: allows +, digits, spaces, hyphens, parentheses
+    const phonePattern = /^[\+]?[(]?[0-9]{1,4}[)]?[-\s\.]?[(]?[0-9]{1,4}[)]?[-\s\.]?[0-9]{1,9}$/
+    return phonePattern.test(phone.replace(/\s/g, ''))
+  }
+
   const handleSubmit = (e) => {
     e.preventDefault()
+    
+    // Validate phone number
+    if (!validatePhone(formData.phone)) {
+      alert('لطفاً یک شماره تلفن معتبر وارد کنید')
+      return
+    }
     
     // ایجاد سفارش
     const orderData = {
@@ -67,10 +79,22 @@ export default function Checkout() {
   }
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    })
+    const { name, value } = e.target
+    
+    // For phone input, only allow valid phone characters
+    if (name === 'phone') {
+      // Allow digits, +, -, spaces, parentheses
+      const phoneValue = value.replace(/[^\d\+\-\(\)\s]/g, '')
+      setFormData({
+        ...formData,
+        [name]: phoneValue,
+      })
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value,
+      })
+    }
   }
 
   return (
@@ -106,15 +130,12 @@ export default function Checkout() {
                 ))}
               </div>
               <div className="border-t border-dark/10 pt-4">
-                <div className="flex justify-between items-center mb-2">
+                <div className="flex justify-between items-center">
                   <span className="text-dark/70">جمع کل:</span>
                   <span className="text-xl font-serif text-gold">
                     {formatPrice(getTotalPrice())}
                   </span>
                 </div>
-                <p className="text-xs text-dark/50">
-                  هزینه ارسال در مرحله بعد محاسبه می‌شود
-                </p>
               </div>
             </div>
           </div>
@@ -165,7 +186,7 @@ export default function Checkout() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-2">
-                    شماره تماس
+                    شماره تماس <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="tel"
@@ -173,8 +194,13 @@ export default function Checkout() {
                     value={formData.phone}
                     onChange={handleChange}
                     required
+                    placeholder="+90 (539) 334 96 76"
+                    pattern="[\+]?[(]?[0-9]{1,4}[)]?[-\s\.]?[(]?[0-9]{1,4}[)]?[-\s\.]?[0-9]{1,9}"
                     className="w-full px-4 py-3 border border-dark/20 rounded-lg focus:outline-none focus:border-gold transition-colors"
                   />
+                  <p className="text-xs text-dark/50 mt-1">
+                    مثال: +90 (539) 334 96 76 یا 905393349676
+                  </p>
                 </div>
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium mb-2">
